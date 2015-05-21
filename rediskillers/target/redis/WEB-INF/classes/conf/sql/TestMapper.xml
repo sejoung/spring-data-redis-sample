@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="testDao">    
+	<select id="selectTestList" parameterType="parameter" resultType="result">
+		SELECT
+			1 as userid
+			2 as b
+			3 as c
+		FROM dual
+	</select>
+	<select id="selectTest"  resultType="result">
+	SELECT '1 + 1' as aaa, '123' as bbb, '3123' as ccc FROM DUAL;
+	</select>
+</mapper>
+    
