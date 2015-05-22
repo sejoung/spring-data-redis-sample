@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import kr.co.killers.redis.exception.RedisException;
 import kr.co.killers.redis.test.dao.RedisNonceDao;
+import kr.co.killers.redis.test.dao.RedisSessionDao;
 import kr.co.killers.redis.test.dao.TestDao;
 import kr.co.killers.redis.util.CommonUtil;
 import kr.co.killers.redis.util.KeyUtils;
@@ -26,9 +27,13 @@ public class TestServiceImpl implements TestService {
 	@Resource(name = "TestDao")
 	private TestDao testDao;
 
-	@Resource(name = "RedisDao")
-	private RedisNonceDao testRedisDao;
-
+	@Resource(name = "RedisNonceDao")
+	private RedisNonceDao redisNonceDao;
+	
+	@Resource(name = "RedisSessionDao")
+	private RedisSessionDao redisSessionDao;
+	
+	
 	String imoryId = "imory123";
 
 	@Override
@@ -39,7 +44,7 @@ public class TestServiceImpl implements TestService {
 		sessionMap.put("session_id",sessionId);
 		sessionMap.put("test", "test");
 		try {
-			testRedisDao.createSession(sessionId, imoryId, sessionMap);
+			redisSessionDao.createSession(sessionId, imoryId, sessionMap);
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -52,7 +57,7 @@ public class TestServiceImpl implements TestService {
 		String json = null;
 		try {
 			String sessionId = (String) params.get("sessionId");
-			testRedisDao.deleteSession(sessionId);
+			redisSessionDao.deleteSession(sessionId);
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -65,7 +70,7 @@ public class TestServiceImpl implements TestService {
 		String json = null;
 		try {
 			String sessionId = (String) params.get("sessionId");
-			testRedisDao.updateSessionExpriedTime(sessionId, 1);
+			redisSessionDao.updateSessionExpriedTime(sessionId, 1);
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -78,7 +83,7 @@ public class TestServiceImpl implements TestService {
 		String json = null;
 		try {
 			String sessionId = (String) params.get("sessionId");
-			json = CommonUtil.generateJson(testRedisDao.selectSession(sessionId));
+			json = CommonUtil.generateJson(redisSessionDao.selectSession(sessionId));
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
 		}
@@ -89,7 +94,7 @@ public class TestServiceImpl implements TestService {
 	public void redisSessionCountSample(HttpSession session, HttpServletRequest request, HttpServletResponse response, ModelMap modelMap, Map<String, Object> params) throws Exception {
 		String json = null;
 		try {
-			json = "{\"count\":\""+testRedisDao.selectSessionCount(imoryId)+"\"}";
+			json = "{\"count\":\""+redisSessionDao.selectSessionCount(imoryId)+"\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
 		}
@@ -105,7 +110,7 @@ public class TestServiceImpl implements TestService {
 		nonceMap.put("test", "noncetest");
 		nonceMap.put("status", "1");
 		try {
-			testRedisDao.createAdjNonce(nonceId, nonceMap);
+			redisNonceDao.createAdjNonce(nonceId, nonceMap);
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -118,7 +123,7 @@ public class TestServiceImpl implements TestService {
 		String json = null;
 		try {
 			String nonceId = (String) params.get("nonceId");
-			testRedisDao.deleteAdjNonce(nonceId);
+			redisNonceDao.deleteAdjNonce(nonceId);
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -131,7 +136,7 @@ public class TestServiceImpl implements TestService {
 		String json = null;
 		try {
 			String nonceId = (String) params.get("nonceId");
-			testRedisDao.updateAdjNonceStatus(nonceId, "2");
+			redisNonceDao.updateAdjNonceStatus(nonceId, "2");
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -144,7 +149,7 @@ public class TestServiceImpl implements TestService {
 		String json = null;
 		try {
 			String nonceId = (String) params.get("nonceId");
-			testRedisDao.selectAdjNonce(nonceId);
+			redisNonceDao.selectAdjNonce(nonceId);
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -161,7 +166,7 @@ public class TestServiceImpl implements TestService {
 		nonceMap.put("test", "noncetest");
 		nonceMap.put("status", "1");
 		try {
-			testRedisDao.createOneNonce(nonceId, nonceMap);
+			redisNonceDao.createOneNonce(nonceId, nonceMap);
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -174,7 +179,7 @@ public class TestServiceImpl implements TestService {
 		String json = null;
 		try {
 			String nonceId = (String) params.get("nonceId");
-			testRedisDao.deleteOneNonce(nonceId);
+			redisNonceDao.deleteOneNonce(nonceId);
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -187,7 +192,7 @@ public class TestServiceImpl implements TestService {
 		String json = null;
 		try {
 			String nonceId = (String) params.get("nonceId");
-			testRedisDao.updateOneNonceStatus(nonceId, "2");
+			redisNonceDao.updateOneNonceStatus(nonceId, "2");
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";
@@ -200,7 +205,7 @@ public class TestServiceImpl implements TestService {
 		String json = null;
 		try {
 			String nonceId = (String) params.get("nonceId");
-			testRedisDao.selectOneNonce(nonceId);
+			redisNonceDao.selectOneNonce(nonceId);
 			json = "{\"code\":\"0000\",\"msg\":\"success\"}";
 		} catch (RedisException e) {
 			json = "{\"code\":\""+e.getErrorCode()+"\",\"msg\":\""+e.getErrorMsg()+"\"}";

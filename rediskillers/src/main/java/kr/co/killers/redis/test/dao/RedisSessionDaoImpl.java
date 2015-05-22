@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author sanaes
  *
  */
-@Repository("RedisDao")
+@Repository("RedisSessionDao")
 @PropertySource("classpath:redis.properties")
 public class RedisSessionDaoImpl implements RedisSessionDao {
 	private static final Logger log = LoggerFactory.getLogger(RedisSessionDaoImpl.class);
