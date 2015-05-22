@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 
 import kr.co.killers.redis.exception.RedisException;
 import kr.co.killers.redis.test.config.ApplicationContext;
-import kr.co.killers.redis.test.dao.RedisDao;
+import kr.co.killers.redis.test.dao.RedisNonceDao;
 import kr.co.killers.redis.util.RedisKeyUtils;
 
 import org.junit.Before;
@@ -30,7 +30,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 public class RedisDaoTest {
 
 	@Resource(name = "RedisDao")
-	private RedisDao testRedisDao;
+	private RedisNonceDao testRedisDao;
 
 	@Resource(name = "masterSessionRedisTemplate")
 	private StringRedisTemplate masterSessionRedisTemplate;

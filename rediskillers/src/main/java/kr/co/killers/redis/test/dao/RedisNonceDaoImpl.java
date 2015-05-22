@@ -26,8 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository("RedisDao")
 @PropertySource("classpath:redis.properties")
-public class RedisDaoImpl implements RedisDao {
-	private static final Logger log = LoggerFactory.getLogger(RedisDaoImpl.class);
+public class RedisNonceDaoImpl implements RedisNonceDao {
+	private static final Logger log = LoggerFactory.getLogger(RedisNonceDaoImpl.class);
 
 	@Resource(name = "masterSessionRedisTemplate")
 	private StringRedisTemplate masterSessionRedisTemplate;

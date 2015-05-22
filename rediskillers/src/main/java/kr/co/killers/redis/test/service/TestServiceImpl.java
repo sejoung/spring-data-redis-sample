@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import kr.co.killers.redis.exception.RedisException;
-import kr.co.killers.redis.test.dao.RedisDao;
+import kr.co.killers.redis.test.dao.RedisNonceDao;
 import kr.co.killers.redis.test.dao.TestDao;
 import kr.co.killers.redis.util.CommonUtil;
 import kr.co.killers.redis.util.KeyUtils;
@@ -27,7 +27,7 @@ public class TestServiceImpl implements TestService {
 	private TestDao testDao;
 
 	@Resource(name = "RedisDao")
-	private RedisDao testRedisDao;
+	private RedisNonceDao testRedisDao;
 
 	String imoryId = "imory123";
 
