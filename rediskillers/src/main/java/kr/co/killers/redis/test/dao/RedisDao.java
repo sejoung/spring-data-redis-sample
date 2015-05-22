@@ -4,6 +4,11 @@ import java.util.Map;
 
 import kr.co.killers.redis.exception.RedisException;
 
+/**
+ * Redis Doa 인터페이스
+ *  
+ * @author sanaes 
+ */
 public interface RedisDao {
 	
 	/**
@@ -11,11 +16,8 @@ public interface RedisDao {
 	 * 세션 등록
 	 * @param sessionId
 	 * @param imoryId
-	 * @param session { session_id : 세션id, auth_id : 인증 id, userid : 사용자 id, id : LGU+ 사용자 고유 id(imoryid),
-	 * 					reg_date : 세션 생성 시간, expire_date : 세션 만료 시간, hold_req_date : 세션 연장 요청 시간,
-	 * 					auth_type : 인증 타입 구분(0 : 로그인 api, 1 : oauth) }
+	 * @param sessionMap 
 	 * @throws RedisException {1000: redis서버에 접속이 안됨,  9999:알수없는 오류}
-	 * 
 	 * </pre>
 	 * 
 	 */
@@ -34,15 +36,15 @@ public interface RedisDao {
 	Map<String, String> selectSession(String sessionId) throws RedisException;
 	
 	/**
-	 * 발급된 세션 발급 가능 여부 
+	 * 발급된 세션 갯수 조회
 	 * @param imoryId
-	 * @return boolean {true : 발급가능, false : 발급불가능}
+	 * @return int 발급된 갯수
 	 * @throws RedisException {1000: redis서버에 접속이 안됨 , 9999:알수없는 오류}
 	 */
 	int selectSessionCount(String imoryId) throws RedisException;
 	
 	/**
-	 * 세션 삭제 count를 DB에서 조회 시 사용 해야 함
+	 * 세션 삭제 Set<String>에 저장된 값까지 삭제 (count를 DB에서 조회 시 사용 해야 함)
 	 * @param sessionId
 	 * @param imoryId
 	 * @throws RedisException {1000: redis서버에 접속이 안됨,  9999:알수없는 오류}
@@ -58,7 +60,7 @@ public interface RedisDao {
 	void deleteSession(String sessionId) throws RedisException;
 	
 	/**
-	 * 세션연장 
+	 * 세션 연장 
 	 * 
 	 * @param sessionId
 	 * @param hour
@@ -70,7 +72,9 @@ public interface RedisDao {
 	 * onetime nonce 생성 
 	 * 
 	 * @param nonceId
-	 * @param nonce
+	 * @param nonceMap
+	 *
+	 * 
 	 * @throws RedisException {1000: redis서버에 접속이 안됨,  9999:알수없는 오류}
 	 */
 	void createOneNonce(String nonceId, Map<String, String> nonceMap) throws RedisException;
@@ -78,7 +82,9 @@ public interface RedisDao {
 	/**
 	 * adjustable nonce 생성
 	 * @param nonceId
-	 * @param nonce
+	 * @param nonceMap
+	 * 	
+	 * 
 	 * @throws RedisException {1000: redis서버에 접속이 안됨,  9999:알수없는 오류}
 	 */
 	void createAdjNonce(String nonceId, Map<String, String> nonceMap) throws RedisException;

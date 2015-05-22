@@ -19,6 +19,11 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Redis Dao 인터페이스 구현체
+ * @author sanaes
+ *
+ */
 @Repository("RedisDao")
 @PropertySource("classpath:redis.properties")
 public class RedisDaoImpl implements RedisDao {

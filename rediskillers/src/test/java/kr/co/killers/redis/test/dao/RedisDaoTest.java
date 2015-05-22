@@ -86,7 +86,7 @@ public class RedisDaoTest {
 	@Test
 	public void bTest() {
 		try {
-			//위에서 생성된 세션 정보를 조회
+			// 위에서 생성된 세션 정보를 조회
 			Map<String, String> selectSessionMap = testRedisDao.selectSession(sessionId);
 			assertTrue(sessionMap.get("session_id").equals(selectSessionMap.get("session_id")));
 		} catch (RedisException e) {
@@ -111,8 +111,7 @@ public class RedisDaoTest {
 			newsessionMap2.put("session_id", newSessionId2);
 			newsessionMap2.put("test", "sessiontest");
 			newsessionMap2.put("status", "1");
-			
-			
+
 			// 기존에 생성한 imoryId에 세션을 추가
 			testRedisDao.createSession(newSessionId, imoryId, newsessionMap);
 			// 새로운 imoryId에 세션을 추가
@@ -132,7 +131,7 @@ public class RedisDaoTest {
 			assertTrue(count3 == 1);
 
 			// 새로운 imoryId에 세션을 삭제
-			testRedisDao.deleteSession(newSessionId2);
+			testRedisDao.deleteSession(newSessionId2, newImoryId);
 
 			// 새로운 imoryId에 세션수를 조회
 			int count4 = testRedisDao.selectSessionCount(newImoryId);
@@ -150,13 +149,13 @@ public class RedisDaoTest {
 	public void dTest() {
 		try {
 			String sessionKey = RedisKeyUtils.scnSessionInfo(sessionId);
-			//세션 만료시간을 확인
+			// 세션 만료시간을 확인
 			long oldTime = slaveSessionRedisTemplate.getExpire(sessionKey);
-			
-			//세션 만료시간을 수정
+
+			// 세션 만료시간을 수정
 			testRedisDao.updateSessionExpriedTime(sessionId, 1);
 
-			//세션 만료시간을 확인
+			// 세션 만료시간을 확인
 			long updateTime = slaveSessionRedisTemplate.getExpire(sessionKey);
 			assertTrue(updateTime < oldTime);
 		} catch (RedisException e) {
@@ -174,12 +173,12 @@ public class RedisDaoTest {
 	@Test
 	public void eTest() {
 		try {
-			//세션을 삭제
+			// 세션을 삭제
 			testRedisDao.deleteSession(sessionId);
-			//삭제된 세션수를 확인
+			// 삭제된 세션수를 확인
 			int count = testRedisDao.selectSessionCount(imoryId);
 			assertTrue(count == 0);
-			//삭제된 세션 확인
+			// 삭제된 세션 확인
 			Map<String, String> selectSessionMap = testRedisDao.selectSession(sessionId);
 			assertTrue(selectSessionMap.isEmpty());
 		} catch (RedisException e) {
