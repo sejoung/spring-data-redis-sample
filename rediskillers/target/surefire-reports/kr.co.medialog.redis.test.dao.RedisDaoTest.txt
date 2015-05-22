@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: kr.co.medialog.redis.test.dao.RedisDaoTest
--------------------------------------------------------------------------------
-Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.716 sec - in kr.co.medialog.redis.test.dao.RedisDaoTest

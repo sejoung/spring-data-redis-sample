@@ -10,6 +10,8 @@ import kr.co.killers.redis.exception.RedisException;
 import kr.co.killers.redis.util.RedisKeyUtils;
 import kr.co.killers.redis.util.TransMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.RedisConnectionFailureException;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository("RedisDao")
 @PropertySource("classpath:redis.properties")
 public class RedisDaoImpl implements RedisDao {
+	private static final Logger log = LoggerFactory.getLogger(RedisDaoImpl.class);
 
 	@Resource(name = "masterSessionRedisTemplate")
 	private StringRedisTemplate masterSessionRedisTemplate;
@@ -44,15 +47,17 @@ public class RedisDaoImpl implements RedisDao {
 	@Override
 	@Transactional(rollbackFor = RedisException.class)
 	public void createSession(String sessionId, String imoryId, Map<String, String> sessionMap) throws RedisException {
-		String sessionKey = RedisKeyUtils.scnSessionInfo(sessionId);
 		try {
+			String sessionKey = RedisKeyUtils.scnSessionInfo(sessionId);
 			masterSessionRedisTemplate.opsForHash().putAll(sessionKey, sessionMap);
 			masterSessionRedisTemplate.expire(sessionKey, sessionExpiretime, TimeUnit.HOURS);
 			String sessionCntKey = RedisKeyUtils.scnSessionCnt(imoryId);
 			masterSessionRedisTemplate.opsForSet().add(sessionCntKey, sessionKey);
 		} catch (RedisConnectionFailureException e) {
+			log.error("createSession RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("createSession Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -64,8 +69,10 @@ public class RedisDaoImpl implements RedisDao {
 			Map<Object, Object> result = slaveSessionRedisTemplate.opsForHash().entries(sessionKey);
 			return TransMap.transMap(result);
 		} catch (RedisConnectionFailureException e) {
+			log.error("selectSession RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("selectSession Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 
@@ -95,8 +102,10 @@ public class RedisDaoImpl implements RedisDao {
 			return sessionCnt;
 
 		} catch (RedisConnectionFailureException e) {
+			log.error("selectSessionCount RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("selectSessionCount Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -110,8 +119,10 @@ public class RedisDaoImpl implements RedisDao {
 			String sessionCntKey = RedisKeyUtils.scnSessionCnt(imoryId);
 			masterSessionRedisTemplate.opsForSet().remove(sessionCntKey, sessionKey);
 		} catch (RedisConnectionFailureException e) {
+			log.error("deleteSession(String sessionId, String imoryId) RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("deleteSession(String sessionId, String imoryId) Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -123,8 +134,10 @@ public class RedisDaoImpl implements RedisDao {
 			String sessionKey = RedisKeyUtils.scnSessionInfo(sessionId);
 			masterSessionRedisTemplate.delete(sessionKey);
 		} catch (RedisConnectionFailureException e) {
+			log.error("deleteSession(String sessionId) RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("deleteSession(String sessionId) Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -136,8 +149,10 @@ public class RedisDaoImpl implements RedisDao {
 			String sessionKey = RedisKeyUtils.scnSessionInfo(sessionId);
 			masterSessionRedisTemplate.expire(sessionKey, hour, TimeUnit.HOURS);
 		} catch (RedisConnectionFailureException e) {
+			log.error("updateSessionExpriedTime RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("updateSessionExpriedTime Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -149,10 +164,11 @@ public class RedisDaoImpl implements RedisDao {
 			String nonceKey = RedisKeyUtils.scnNonceOne(nonceId);
 			masterNonceRedisTemplate.opsForHash().putAll(nonceKey, nonceMap);
 			masterNonceRedisTemplate.expire(nonceKey, nonceExpiretime, TimeUnit.HOURS);
-
 		} catch (RedisConnectionFailureException e) {
+			log.error("createOneNonce RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("createOneNonce Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -165,8 +181,10 @@ public class RedisDaoImpl implements RedisDao {
 			masterNonceRedisTemplate.opsForHash().putAll(nonceKey, nonceMap);
 			masterNonceRedisTemplate.expire(nonceKey, nonceExpiretime, TimeUnit.HOURS);
 		} catch (RedisConnectionFailureException e) {
+			log.error("createAdjNonce RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("createAdjNonce Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 
@@ -179,8 +197,10 @@ public class RedisDaoImpl implements RedisDao {
 			Map<Object, Object> result = slaveNonceRedisTemplate.opsForHash().entries(nonceKey);
 			return TransMap.transMap(result);
 		} catch (RedisConnectionFailureException e) {
+			log.error("selectOneNonce RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("selectOneNonce Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -192,8 +212,10 @@ public class RedisDaoImpl implements RedisDao {
 			Map<Object, Object> result = slaveNonceRedisTemplate.opsForHash().entries(nonceKey);
 			return TransMap.transMap(result);
 		} catch (RedisConnectionFailureException e) {
+			log.error("selectAdjNonce RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("selectAdjNonce Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -204,8 +226,10 @@ public class RedisDaoImpl implements RedisDao {
 			String nonceKey = RedisKeyUtils.scnNonceAdj(nonceId);
 			masterNonceRedisTemplate.delete(nonceKey);
 		} catch (RedisConnectionFailureException e) {
+			log.error("deleteAdjNonce RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("deleteAdjNonce Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -216,8 +240,10 @@ public class RedisDaoImpl implements RedisDao {
 			String nonceKey = RedisKeyUtils.scnNonceOne(nonceId);
 			masterNonceRedisTemplate.delete(nonceKey);
 		} catch (RedisConnectionFailureException e) {
+			log.error("deleteOneNonce RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("deleteOneNonce Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -229,8 +255,10 @@ public class RedisDaoImpl implements RedisDao {
 			String nonceKey = RedisKeyUtils.scnNonceOne(nonceId);
 			masterNonceRedisTemplate.opsForHash().put(nonceKey, NONCESTATUSHASHKEY, status);
 		} catch (RedisConnectionFailureException e) {
+			log.error("updateOneNonceStatus RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("updateOneNonceStatus Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
@@ -241,8 +269,10 @@ public class RedisDaoImpl implements RedisDao {
 			String nonceKey = RedisKeyUtils.scnNonceAdj(nonceId);
 			masterNonceRedisTemplate.opsForHash().put(nonceKey, NONCESTATUSHASHKEY, status);
 		} catch (RedisConnectionFailureException e) {
+			log.error("updateAdjNonceStatus RedisConnectionFailureException 발생 ",e);
 			throw new RedisException("1000", e.getMessage());
 		} catch (Exception e) {
+			log.error("updateAdjNonceStatus Exception 발생 ",e);
 			throw new RedisException("9999", e.getMessage());
 		}
 	}
